@@ -29,11 +29,11 @@ const CourseSchema = new mongoose.Schema({
     required: true,
   },
   tags: {
-    type: Array,
+    type: [String],
     default: [],
   },
   reading_materials: {
-    type: Array,
+    type: [String],
     default: [],
   },
   notes: {

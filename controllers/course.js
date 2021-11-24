@@ -46,7 +46,7 @@ exports.createCourse = async (req, res) => {
       } else {
         return res.status(500).json({
           success: false,
-          error: error,
+          error: "Something went wrong!",
         });
       }
     }
@@ -55,6 +55,69 @@ exports.createCourse = async (req, res) => {
     return res.status(404).json({
       success: false,
       error: "User not found",
+    });
+  }
+};
+
+exports.addNotes = async (req, res) => {
+  try {
+    const { course_id, notes } = req.body;
+
+    const course = await Course.findOneAndUpdate(
+      { _id: course_id },
+      { $set: { notes } },
+      { new: true }
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: course,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(404).json({
+      success: false,
+      error: "Course not found",
+    });
+  }
+};
+
+exports.uploadReadingMaterial = async (req, res) => {
+  try {
+    const { course_id } = req.body;
+
+    const course = await Course.findById(course_id);
+
+    try {
+      let reading_materials = course.reading_materials;
+
+      if (req.files.length > 0) {
+        req.files.map((file) => {
+          reading_materials.push(file.location);
+        });
+      }
+
+      course.save();
+
+      return res.status(201).json({
+        success: true,
+        data: course,
+      });
+    } catch (error) {
+      console.log(error);
+
+      return res.status(500).json({
+        success: false,
+        error: "Something went wrong!",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+
+    return res.status(404).json({
+      success: false,
+      error: "Course not found",
     });
   }
 };
